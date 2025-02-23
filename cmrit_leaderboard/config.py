@@ -22,6 +22,8 @@ class Config:
     USERS_COLLECTION = None
     USERNAME_SHEET_URL = None
     CSV_FILE_PATH = None
+    PYRAMID_WEEKLY_TEST_PATH = None
+    PYRAMID_MONTHLY_TEST_PATH = None
 
 DB_MAPPING = {
     "1": {
@@ -83,6 +85,30 @@ HACKERRANK_CONTEST_URLS = {
     "CMRIT-2027-LEADERBOARD": [
         "https://www.hackerrank.com/cmrit-monthly-goal-november-2027"
     ]  # No contests added yet for 2027
+}
+
+PYRAMID_WEEKLY_CONTEST_PATH = {
+    "CMRIT_2025_LEADERBOARD": [
+        "pyramid_contests/cmrit_2025/weekly"
+    ],
+    "CMRIT_2026_LEADERBOARD": [
+        "pyramid_contests/cmrit_2026/weekly"
+    ],
+    "CMRIT_2027_LEADERBOARD": [
+        "pyramid_contests/cmrit_2027/weekly"
+    ]
+}
+
+PYRAMID_MONTHLY_CONTEST_PATH = {
+    "CMRIT_2025_LEADERBOARD": [
+        "pyramid_contests/cmrit_2025/monthly"
+    ],
+    "CMRIT_2026_LEADERBOARD": [
+        "pyramid_contests/cmrit_2026/monthly"
+    ],
+    "CMRIT_2027_LEADERBOARD": [
+        "pyramid_contests/cmrit_2027/monthly"
+    ]
 }
 
 # Scraper URLs
