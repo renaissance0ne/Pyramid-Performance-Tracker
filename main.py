@@ -14,18 +14,19 @@ from verifiers.codeforces import process_codeforces
 from verifiers.geeksforgeeks import process_geeksforgeeks
 from verifiers.hackerrank import process_hackerrank
 from verifiers.leetcode import process_leetcode
-from verifiers.pyramid import process_pyramid
 from verifiers.utils import sheet_download_if_not_exists
 from verifiers.participant import load_participants
 
-from cmrit_leaderboard.config import (
-    Config, DESCRIPTION, DB_MAPPING, CODECHEF_FILE, CODEFORCES_FILE, 
-    GEEKSFORGEEKS_FILE, HACKERRANK_FILE, LEETCODE_FILE, LIMIT_TEST,
-    PYRAMID_WEEKLY_CONTEST_PATH, PYRAMID_MONTHLY_CONTEST_PATH
-)
+from cmrit_leaderboard.config import Config, DESCRIPTION, DB_MAPPING, CODECHEF_FILE, CODEFORCES_FILE, GEEKSFORGEEKS_FILE, HACKERRANK_FILE, LEETCODE_FILE, LIMIT_TEST
 from cmrit_leaderboard.scraper import scrape_all, scrape_platform
 from cmrit_leaderboard.leaderboard import Leaderboard
 from cmrit_leaderboard.evaluator import evaluate_leaderboard
+
+def maintain_directories():
+    print("Maintaining directories...")
+    if not os.path.exists('reports'):
+        print(f"Directory 'reports' does not exist. Creating it...")
+        os.makedirs('reports')
 
 def main():
     maintain_directories()
@@ -33,10 +34,10 @@ def main():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument('--batch', choices=DB_MAPPING.keys(), help='Select a specific batch to run (default is all)', default=None)
     parser.add_argument('--all-batches', action='store_true', help='Run all batches sequentially')
-    parser.add_argument('--scrape', choices=['all', 'codechef', 'codeforces', 'geeksforgeeks', 'hackerrank', 'leetcode', 'pyramid'], help='Platform to scrape')
+    parser.add_argument('--scrape', choices=['all', 'codechef', 'codeforces', 'geeksforgeeks', 'hackerrank', 'leetcode'], help='Platform to scrape')
     parser.add_argument('--build', action='store_true', help='Build the leaderboard')
     parser.add_argument('--evaluate', action='store_true', help='Evaluate the leaderboard')
-    parser.add_argument('--verify', choices=['all', 'codechef', 'codeforces', 'geeksforgeeks', 'hackerrank', 'leetcode', 'pyramid'], help='Platform to verify')
+    parser.add_argument('--verify', choices=['all', 'codechef', 'codeforces', 'geeksforgeeks', 'hackerrank', 'leetcode'], help='Platform to verify')
     parser.add_argument('--clear', action='store_true', help='Clear the logs and reports directories')
     parser.add_argument('--upload', action='store_true', help='Upload data from CSV to database')
 
@@ -45,7 +46,7 @@ def main():
     if args.all_batches:
         for batch_key in DB_MAPPING.keys():
             run_for_batch(batch_key, args)
-            clear_directories()
+            clear_directories()  # Clear after each batch
     elif args.batch:
         run_for_batch(args.batch, args)
     else:
@@ -57,23 +58,18 @@ def run_for_batch(batch_key, args):
     Config.USERS_COLLECTION = batch_config["USERS_COLLECTION"]
     Config.USERNAME_SHEET_URL = batch_config["USERNAME_SHEET_URL"]
     Config.CSV_FILE_PATH = batch_config["CSV_FILE_PATH"]
-    
-    # Set Pyramid paths based on collection name
-    collection_key = Config.USERS_COLLECTION.replace("-", "_")
-    Config.PYRAMID_WEEKLY_TEST_PATH = PYRAMID_WEEKLY_CONTEST_PATH.get(collection_key, [])
-    Config.PYRAMID_MONTHLY_TEST_PATH = PYRAMID_MONTHLY_CONTEST_PATH.get(collection_key, [])
 
     print(f"\nRunning for batch: {batch_key} => {Config.DB_NAME} - {Config.USERS_COLLECTION}")
 
     if args.clear:
         clear_directories()
 
-    from cmrit_leaderboard.db_uploader import upload_to_db
+    from cmrit_leaderboard.db_uploader import upload_to_db  # Import here to avoid circular imports
 
     file_path = Config.CSV_FILE_PATH
     sheet_download_if_not_exists(file_path, Config.USERNAME_SHEET_URL)
     participants = load_participants(file_path)
-    
+
     if args.verify:
         if args.verify == 'codechef' or args.verify == 'all':
             process_codechef(participants)
@@ -85,10 +81,9 @@ def run_for_batch(batch_key, args):
             process_hackerrank(participants)
         if args.verify == 'leetcode' or args.verify == 'all':
             process_leetcode(participants)
-        if args.verify == 'pyramid' or args.verify == 'all':
-            process_pyramid(participants)
 
     if args.upload:
+        # If verify is also requested and args is not all, do not upload
         if args.verify and args.verify != 'all':
             return
         sheet_download_if_not_exists(file_path, Config.USERNAME_SHEET_URL)
@@ -106,7 +101,7 @@ def run_for_batch(batch_key, args):
         leaderboard = Leaderboard()
         leaderboard_data = leaderboard.build_leaderboard()
 
-    if args.evaluate:
+    if args.evaluate:  # Check if evaluation is requested
         evaluate_leaderboard()
         print(f'Evaluation completed for {Config.DB_NAME} - {Config.USERS_COLLECTION}')
 

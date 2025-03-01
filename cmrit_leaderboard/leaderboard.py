@@ -17,16 +17,17 @@ class Leaderboard:
     LEETCODE_RATING = 9
     HACKERRANK_USERNAME = 10
     HACKERRANK_RATING = 11
-    CODECHEF_STATUS = 12
-    CODEFORCES_STATUS = 13
-    GEEKSFORGEEKS_STATUS = 14
-    LEETCODE_STATUS = 15
-    HACKERRANK_STATUS = 16
-    PYRAMID_HANDLE = 17
-    PYRAMID_WEEKLY_RATING = 18
-    PYRAMID_MONTHLY_RATING = 19
-    TOTAL_RATING = 20
-    PERCENTILE = 21
+    PYRAMID_HANDLE = 12  # Added
+    PYRAMID_WEEKLY_RATING = 13  # Added
+    PYRAMID_MONTHLY_RATING = 14  # Added
+    PYRAMID_RATING = 15  # Added
+    CODECHEF_STATUS = 16
+    CODEFORCES_STATUS = 17
+    GEEKSFORGEEKS_STATUS = 18
+    LEETCODE_STATUS = 19
+    HACKERRANK_STATUS = 20
+    TOTAL_RATING = 21
+    PERCENTILE = 22
 
     def __init__(self):
         self.db = Database()
@@ -65,6 +66,10 @@ class Leaderboard:
                 'Leetcode Rating': user.get('leetcodeRating'),
                 'Hackerrank Username': user.get('hackerrankUsername'),
                 'Hackerrank Rating': user.get('hackerrankRating'),
+                'Pyramid Handle': user.get('hallTicketNo'), 
+                'Pyramid Weekly Rating': user.get('pyramidWeeklyRating'),
+                'Pyramid Monthly Rating': user.get('pyramidMonthlyRating'),
+                'Pyramid Rating': user.get('pyramidRating'),
                 'Codechef Status': user.get('codechefStatus'),
                 'Codeforces Status': user.get('codeforcesStatus'),
                 'GeeksforGeeks Status': user.get('geeksforgeeksStatus'),
@@ -72,9 +77,6 @@ class Leaderboard:
                 'Hackerrank Status': user.get('hackerrankStatus'),
                 'Total Rating': user.get('TotalRating'),
                 'Percentile': user.get('Percentile'),
-                'Pyramid Handle': user.get('pyramidHandle', user['hallTicketNo']),
-                'Pyramid Weekly Rating': user.get('pyramidWeeklyRating', 0),
-                'Pyramid Monthly Rating': user.get('pyramidMonthlyRating', 0)
             })
         return data
 
