@@ -85,6 +85,21 @@ HACKERRANK_CONTEST_URLS = {
     ]  # No contests added yet for 2027
 }
 
+PYRAMID_CONTESTS_PATHS = {
+    "CMRIT-2025-LEADERBOARD": [
+        "pyramid_contests/cmrit_2025/weekly/",
+        "pyramid_contests/cmrit_2025/monthly"
+    ],
+    "CMRIT-2026-LEADERBOARD": [
+        "pyramid_contests/cmrit_2026/weekly/",
+        "pyramid_contests/cmrit_2026/monthly/"
+    ],
+    "CMRIT-2027-LEADERBOARD": [
+        "pyramid_contests/cmrit_2027/weekly/",
+        "pyramid_contests/cmrit_2027/monthly/"
+    ]
+}
+
 # Scraper URLs
 CODECHEF_URL = 'https://www.codechef.com/users'
 CODEFORCES_URL = 'https://codeforces.com/api'
