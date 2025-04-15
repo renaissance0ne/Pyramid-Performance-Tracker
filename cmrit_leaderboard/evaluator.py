@@ -12,8 +12,7 @@ def evaluate_leaderboard():
 
     print("Users loaded:", len(users))
 
-    # Create a column for total rating
-    users['TotalRating'] = users.get('codechefRating', 0) + users.get('codeforcesRating', 0) + users.get('geeksforgeeksWeeklyRating', 0) + users.get('geeksforgeeksPracticeRating', 0) + users.get('leetcodeRating', 0) + users.get('hackerrankRating', 0)
+    users['TotalRating'] = users.get('codechefRating', 0) + users.get('codeforcesRating', 0) + users.get('geeksforgeeksWeeklyRating', 0) + users.get('geeksforgeeksPracticeRating', 0) + users.get('leetcodeRating', 0) + users.get('hackerrankRating', 0) + users.get('pyramidWeeklyRating', 0) + users.get('pyramidMonthlyRating', 0)
 
     print("TotalRating column added")
 
@@ -59,6 +58,20 @@ def evaluate_leaderboard():
 
     print("Max hackerrank rating:", max_hackerrank_rating)
 
+    try:
+        max_pyramid_weekly_rating = users.loc[users['pyramidWeeklyRating'].notnull(), 'pyramidWeeklyRating'].max()
+    except KeyError:
+        max_pyramid_weekly_rating = 0
+
+    print("Max pyramid weekly rating:", max_pyramid_weekly_rating)
+
+    try:
+        max_pyramid_monthly_rating = users.loc[users['pyramidMonthlyRating'].notnull(), 'pyramidMonthlyRating'].max()
+    except KeyError:
+        max_pyramid_monthly_rating = 0
+
+    print("Max pyramid monthly rating:", max_pyramid_monthly_rating)
+
     for index, row in users.iterrows():
         cc = float(row.get('codechefRating', 0))
         cc = cc / max_codechef_rating * 100 if max_codechef_rating != 0 else 0
@@ -72,8 +85,12 @@ def evaluate_leaderboard():
         lc = lc / max_leetcode_rating * 100 if max_leetcode_rating != 0 else 0
         hr = float(row.get('hackerrankRating', 0))
         hr = hr / max_hackerrank_rating * 100 if max_hackerrank_rating != 0 else 0
-        
-        percentile = cc * 0.1 + cf * 0.3 + ggw * 0.3 + ggp * 0.1 + lc * 0.1 + hr * 0.1
+        pw = float(row.get('pyramidWeeklyRating', 0))
+        pw = pw / max_pyramid_weekly_rating * 100 if max_pyramid_weekly_rating != 0 else 0
+        pm = float(row.get('pyramidMonthlyRating', 0))
+        pm = pm / max_pyramid_monthly_rating * 100 if max_pyramid_monthly_rating != 0 else 0
+
+        percentile = cc * 0.1 + cf * 0.2 + ggw * 0.2 + ggp * 0.1 + lc * 0.1 + hr * 0.1 + pw * 0.1 + pm * 0.1
 
         users.at[index, 'Percentile'] = percentile
 

@@ -1,8 +1,6 @@
-import errno
 import os
 import argparse
 import shutil
-import pandas as pd
 
 print("Maintaining directories...")
 if not os.path.exists('reports'):
@@ -21,6 +19,7 @@ from cmrit_leaderboard.config import Config, DESCRIPTION, DB_MAPPING, CODECHEF_F
 from cmrit_leaderboard.scraper import scrape_all, scrape_platform
 from cmrit_leaderboard.leaderboard import Leaderboard
 from cmrit_leaderboard.evaluator import evaluate_leaderboard
+from scripts.pyramid_scraper import scrape_pyramid_contests, integrate_with_main_leaderboard
 
 def maintain_directories():
     print("Maintaining directories...")
@@ -40,6 +39,8 @@ def main():
     parser.add_argument('--verify', choices=['all', 'codechef', 'codeforces', 'geeksforgeeks', 'hackerrank', 'leetcode'], help='Platform to verify')
     parser.add_argument('--clear', action='store_true', help='Clear the logs and reports directories')
     parser.add_argument('--upload', action='store_true', help='Upload data from CSV to database')
+    parser.add_argument('--pyramid', action='store_true', help='Scrape pyramid contest data')
+    parser.add_argument('--integrate', action='store_true', help='Integrate pyramid data with main leaderboard')
 
     args = parser.parse_args()
 
@@ -97,6 +98,9 @@ def run_for_batch(batch_key, args):
         else:
             scrape_platform(args.scrape)
 
+    if args.pyramid:
+        scrape_pyramid_contests()
+
     if args.build:
         leaderboard = Leaderboard()
         leaderboard_data = leaderboard.build_leaderboard()
@@ -104,6 +108,9 @@ def run_for_batch(batch_key, args):
     if args.evaluate:  # Check if evaluation is requested
         evaluate_leaderboard()
         print(f'Evaluation completed for {Config.DB_NAME} - {Config.USERS_COLLECTION}')
+
+    if args.integrate:
+        integrate_with_main_leaderboard()
 
 def check_required_files():
     required_files = [CODECHEF_FILE, CODEFORCES_FILE, GEEKSFORGEEKS_FILE, HACKERRANK_FILE, LEETCODE_FILE]
